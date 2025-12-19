@@ -1,0 +1,38 @@
+services:
+  open_notebook:
+    image: lfnovo/open_notebook:v1-latest-single
+    ports:
+      - "8502:8502"  # Web UI
+      - "5055:5055"  # API
+    environment:
+      # ===== OpenAI中转站配置 =====
+      # 你的中转站完全兼容OpenAI API（包括LLM、Embedding、STT、TTS）
+      # 使用 OPENAI_COMPATIBLE_BASE_URL 可以让所有功能都使用你的中转站
+      - OPENAI_COMPATIBLE_BASE_URL=https://api.univibe.cc/openai/v1
+      - OPENAI_COMPATIBLE_API_KEY=sk-i5oksIo7WZ3vSufagSK7bLKh9TNHyPWc
+      
+      # 注意：虽然表格显示"OpenAI Compatible"只支持LLM，但这是因为
+      # 大多数兼容端点（如LM Studio）只支持LLM。如果你的中转站完全兼容
+      # OpenAI API的所有端点，设置 OPENAI_COMPATIBLE_BASE_URL 后，
+      # 所有功能（LLM、Embedding、STT、TTS）都会使用你的中转站
+      
+      # 如果你的中转站不同服务使用不同端点，可以分别配置：
+      # - OPENAI_COMPATIBLE_BASE_URL_LLM=https://api.univibe.cc/openai/v1
+      # - OPENAI_COMPATIBLE_BASE_URL_EMBEDDING=https://api.univibe.cc/openai/v1
+      # - OPENAI_COMPATIBLE_BASE_URL_STT=https://api.univibe.cc/openai/v1
+      # - OPENAI_COMPATIBLE_BASE_URL_TTS=https://api.univibe.cc/openai/v1
+      
+      # ===== 数据库配置 =====
+      - SURREAL_URL=ws://localhost:8000/rpc
+      - SURREAL_USER=root
+      - SURREAL_PASSWORD=root
+      - SURREAL_NAMESPACE=open_notebook
+      - SURREAL_DATABASE=production
+      
+      # ===== 其他可选配置 =====
+      # - API_URL=http://192.168.1.100:5055  # 远程访问时设置
+      # - APP_PASSWORD=your_password  # 应用密码保护
+    volumes:
+      - ./notebook_data:/app/data
+      - ./surreal_data:/mydata
+    restart: always
